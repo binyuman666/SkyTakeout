@@ -106,6 +106,49 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
+     * 启用/禁用员工账号
+     *
+     * @param status
+     * @param id
+     * @return
+     */
+    public void setOrBan(int status, long id) {
+
+        Employee employee = Employee.builder().
+                status(status).
+                id(id).
+                updateUser(BaseContext.getCurrentId()).
+                updateTime(LocalDateTime.now()).
+                build();
+
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 根据ID查询员工
+     * @param id
+     * @return
+     */
+    public Employee searchById(int id) {
+        Employee employee = employeeMapper.searchById(id);
+        employee.setPassword("*****");
+        return employee;
+    }
+
+    /**
+     * 更新员工信息
+     * @param employeeDTO
+     * @return
+     */
+    public void updateEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        employee.setUpdateTime(LocalDateTime.now());
+        employee.setUpdateUser((BaseContext.getCurrentId()));
+        employeeMapper.update(employee);
+    }
+
+    /**
      * SHA256哈希
      * @param str 明文
      * @return 十六进制哈希字符串
