@@ -62,7 +62,7 @@ public class DishServiceImpl implements DishService {
         Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
     }
-    //asdf
+    //asdf222222222222
 //
 //    /**
 //     * 根据id删除分类
