@@ -23,12 +23,12 @@ public interface DishService {
      * @return
      */
     PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO);
-//
-//    /**
-//     * 根据id删除分类
-//     * @param id
-//     */
-//    void deleteById(Long id);
+
+    /**
+     * 根据id删除菜品
+     * @param ids
+     */
+    void delete(String ids);
 //
 //    /**
 //     * 修改分类

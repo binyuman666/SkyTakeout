@@ -2,13 +2,17 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -18,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 分类业务层
@@ -31,6 +37,8 @@ public class DishServiceImpl implements DishService {
     private DishMapper dishMapper;
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
 
     /**
      * 新增菜品
@@ -56,40 +64,40 @@ public class DishServiceImpl implements DishService {
      * @param dishPageQueryDTO
      * @return
      */
-    //111111
-
-
-    //d
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(),dishPageQueryDTO.getPageSize());
         //下一条sql进行分页，自动加入limit关键字分页
         Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
         return new PageResult(page.getTotal(), page.getResult());
     }
-//
-//    /**
-//     * 根据id删除分类
-//     * @param id
-//     */
-//    public void deleteById(Long id) {
-//        //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
-//        Integer count = dishMapper.countByCategoryId(id);
-//        if(count > 0){
-//            //当前分类下有菜品，不能删除
-//            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
-//        }
-//
-//        //查询当前分类是否关联了套餐，如果关联了就抛出业务异常
-//        count = setmealMapper.countByCategoryId(id);
-//        if(count > 0){
-//            //当前分类下有菜品，不能删除
-//            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
-//        }
-//
-//        //删除分类数据
-//        categoryMapper.deleteById(id);
-//    }
-//
+
+    /**
+     * 根据ids删除菜品以及菜品附属的口味
+     * @param ids
+     */
+    @Transactional
+    public void delete(String ids) {
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
+
+        for(Long id : idList){
+            Dish dish = dishMapper.getById(id);
+            if (dish.getStatus() == StatusConstant.ENABLE){
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            }
+        }
+
+        List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(idList);
+        if (setmealIds != null && !setmealIds.isEmpty()){
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        }
+
+        dishFlavorMapper.deleteBatch(idList);
+        dishMapper.deleteBatch(idList);
+    }
+
 //    /**
 //     * 修改分类
 //     * @param categoryDTO

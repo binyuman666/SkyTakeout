@@ -19,6 +19,13 @@
         order by d.create_time desc
     </select>
 
+    <delete id="deleteBatch">
+        delete from dish where id in
+        <foreach collection="idList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 <!--    <update id="update" parameterType="Category">-->
 <!--        update category-->
 <!--        <set>-->

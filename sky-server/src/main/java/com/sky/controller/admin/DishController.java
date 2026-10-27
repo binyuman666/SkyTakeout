@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,5 +54,17 @@ public class DishController {
     public Result<PageResult> pageDisplay(DishPageQueryDTO dishPageQueryDTO){
         PageResult pageResult = dishService.pageQuery(dishPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 删除菜品以及菜品附属的口味
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    @ApiOperation(value = "菜品删除")
+    public Result delete(String ids) {
+        dishService.delete(ids);
+        return Result.success();
     }
 }
