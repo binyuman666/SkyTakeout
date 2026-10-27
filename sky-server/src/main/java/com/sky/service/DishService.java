@@ -3,6 +3,7 @@ package com.sky.service;
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.dto.DishDTO;
+import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Category;
 import com.sky.result.PageResult;
 
@@ -16,12 +17,12 @@ public interface DishService {
      */
     void save(DishDTO dishDTO);
 
-//    /**
-//     * 分页查询
-//     * @param categoryPageQueryDTO
-//     * @return
-//     */
-//    PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
+    /**
+     * 分页查询
+     * @param dishPageQueryDTO
+     * @return
+     */
+    PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO);
 //
 //    /**
 //     * 根据id删除分类

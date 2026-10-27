@@ -3,50 +3,53 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.DishMapper">
 
-    <select id="pageQuery" resultType="com.sky.entity.Category">
-        select * from category
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        select d.*, c.name as categoryName from dish d left outer join category c on d.category_id = c.id
         <where>
             <if test="name != null and name != ''">
-                and name like concat('%',#{name},'%')
+                and d.name like concat('%',#{name},'%')
             </if>
-            <if test="type != null">
-                and type = #{type}
-            </if>
-        </where>
-        order by sort asc , create_time desc
-    </select>
-
-    <update id="update" parameterType="Category">
-        update category
-        <set>
-            <if test="type != null">
-                type = #{type},
-            </if>
-            <if test="name != null">
-                name = #{name},
-            </if>
-            <if test="sort != null">
-                sort = #{sort},
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
             </if>
             <if test="status != null">
-                status = #{status},
+                and d.status = #{status}
             </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime},
-            </if>
-            <if test="updateUser != null">
-                update_user = #{updateUser}
-            </if>
-        </set>
-        where id = #{id}
-    </update>
-
-    <select id="list" resultType="Category">
-        select * from category
-        where status = 1
-        <if test="type != null">
-            and type = #{type}
-        </if>
-        order by sort asc,create_time desc
+        </where>
+        order by d.create_time desc
     </select>
+
+<!--    <update id="update" parameterType="Category">-->
+<!--        update category-->
+<!--        <set>-->
+<!--            <if test="type != null">-->
+<!--                type = #{type},-->
+<!--            </if>-->
+<!--            <if test="name != null">-->
+<!--                name = #{name},-->
+<!--            </if>-->
+<!--            <if test="sort != null">-->
+<!--                sort = #{sort},-->
+<!--            </if>-->
+<!--            <if test="status != null">-->
+<!--                status = #{status},-->
+<!--            </if>-->
+<!--            <if test="updateTime != null">-->
+<!--                update_time = #{updateTime},-->
+<!--            </if>-->
+<!--            <if test="updateUser != null">-->
+<!--                update_user = #{updateUser}-->
+<!--            </if>-->
+<!--        </set>-->
+<!--        where id = #{id}-->
+<!--    </update>-->
+
+<!--    <select id="list" resultType="Category">-->
+<!--        select * from category-->
+<!--        where status = 1-->
+<!--        <if test="type != null">-->
+<!--            and type = #{type}-->
+<!--        </if>-->
+<!--        order by sort asc,create_time desc-->
+<!--    </select>-->
 </mapper>
