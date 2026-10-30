@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -130,6 +129,29 @@ public class DishServiceImpl implements DishService {
             }
             dishFlavorMapper.insert(flavors);
         }
+    }
+
+    public List<Dish> list(Long categoryId) {
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return dishMapper.list(dish);
+    }
+
+    @Transactional
+    public void startOrStop(Integer status, Long id) {
+        if(status.equals(StatusConstant.DISABLE)){
+            List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishId(id);
+            if(setmealIds != null && setmealIds.size() > 0){
+                throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_ONSALE_SETMEAL);
+            }
+        }
+
+        Dish dish = new Dish();
+        dish.setId(id);
+        dish.setStatus(status);
+        dishMapper.update(dish);
     }
 
 //    /**
