@@ -1,24 +1,16 @@
 package com.sky.controller.admin;
 
-import com.sky.constant.MessageConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
-import com.sky.dto.EmployeePageQueryDTO;
-import com.sky.entity.DishFlavor;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
-import com.sky.utils.AliOssUtil;
+import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.UUID;
 
 /**
  * 通用接口
@@ -67,4 +59,29 @@ public class DishController {
         dishService.delete(ids);
         return Result.success();
     }
+
+    /**
+     * 根据ID查询菜品以及菜品附属的口味
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation(value = "根据ID查询菜品以及菜品附属的口味")
+    public Result<DishVO> getById(@PathVariable Long id) {
+        DishVO dishVO = dishService.getByIdWithFlavors(id);
+        return Result.success(dishVO);
+    }
+
+    /**
+     * 编辑菜品信息
+     * @param dishDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation(value = "编辑菜品信息")
+    public Result updateDish(@RequestBody DishDTO dishDTO) {
+        dishService.updateDish(dishDTO);
+        return Result.success();
+    }
+
 }

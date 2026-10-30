@@ -10,9 +10,16 @@
         </foreach>
     </insert>
 
-    <delete id="deleteBatch">
+    <delete id="deleteBatchByDishId">
         delete from dish_flavor where dish_id in
         <foreach collection="idList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBatchByFlavorId">
+        delete from dish_flavor where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>

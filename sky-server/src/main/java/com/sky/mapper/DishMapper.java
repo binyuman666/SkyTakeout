@@ -2,11 +2,8 @@ package com.sky.mapper;
 
 import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
-import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.dto.DishPageQueryDTO;
-import com.sky.entity.Category;
 import com.sky.entity.Dish;
-import com.sky.entity.DishFlavor;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.*;
@@ -58,4 +55,11 @@ public interface DishMapper {
      */
     void deleteBatch(List<Long> idList);
 
+    /**
+     * 编辑菜品信息
+     * @param dish
+     * @return
+     */
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Dish dish);
 }

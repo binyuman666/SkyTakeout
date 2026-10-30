@@ -4,7 +4,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
-import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +47,6 @@ public class DishServiceImpl implements DishService {
     @Transactional
     public void save(DishDTO dishDTO) {
         Dish dish = new Dish();
-        //属性拷贝
         BeanUtils.copyProperties(dishDTO, dish);
         dishMapper.insertDish(dish);
 
@@ -94,8 +93,43 @@ public class DishServiceImpl implements DishService {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
 
-        dishFlavorMapper.deleteBatch(idList);
+        dishFlavorMapper.deleteBatchByDishId(idList);
         dishMapper.deleteBatch(idList);
+    }
+
+    /**
+     * 根据菜品id查询菜品以及菜品附属的口味
+     * @param id
+     */
+    public DishVO getByIdWithFlavors(Long id) {
+        DishVO dishVO = new DishVO();
+        Dish dish = dishMapper.getById(id);
+
+        BeanUtils.copyProperties(dish, dishVO);
+        dishVO.setFlavors(dishFlavorMapper.getByDishId(id));
+        return dishVO;
+    }
+
+    /**
+     * 编辑菜品以及附属口味的信息
+     * @param dishDTO
+     */
+    @Transactional
+    public void updateDish(DishDTO dishDTO) {
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        Long dishId = dish.getId();
+
+        dishMapper.update(dish);
+
+        dishFlavorMapper.deleteByDishId(dishId);
+        if (!flavors.isEmpty()) {
+            for (DishFlavor flavor : flavors) {
+                flavor.setDishId(dishId);
+            }
+            dishFlavorMapper.insert(flavors);
+        }
     }
 
 //    /**
